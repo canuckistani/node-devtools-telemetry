@@ -1,0 +1,55 @@
+#!/usr/bin/env node
+
+var optimist = require('optimist');
+var fs = require('fs');
+var argv = optimist
+    .usage('Usage: node ./bin/cli <command>')
+    .argv;
+
+var DevtoolsTelemetry = require('../index').DevtoolsTelemetry;
+var targetFile = './test-data.json';
+var dd = new DevtoolsTelemetry();
+var _ = require('lodash');
+
+function getWeeklyData(callback) {
+  // get results
+  var windows = dd.generateBuildWindows(40, 41);
+  dd.getWeeklyToolUsage(windows, 'Toolbox', function(result) {
+    //
+
+  });
+
+}
+
+function main(command, callback) {
+  dd.init(function() {
+    switch(command) {
+      case 'weekly':
+        var windows = dd.generateBuildWindows(40, 41);
+        dd.getWeeklyToolUsage(windows, 'Toolbox', callback);
+        break;
+      default:
+        console.log("got here?");
+    }
+  });
+}
+
+if (!module.parent) {
+  if (argv._.length === 0) {
+    optimist.usage();
+    process.exit();
+  }
+  else {
+    var command = argv._.shift();
+    main(command, function(results) {
+      if (!results || _.keys(results).length === 0) {
+        throw ">> Invalid / bad data?\n"+JSON.stringify(results);
+      }
+
+      fs.writeFile(targetFile, JSON.stringify(results), function(err) {
+        if (err) throw err;
+        console.log("Write file", targetFile);
+      });
+    });
+  }
+}
