@@ -563,5 +563,5 @@ if (!module.parent) {
       debugger;
       console.log("result>", result);
     });
-  })
+  });
 }
