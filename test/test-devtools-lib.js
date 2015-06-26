@@ -1,7 +1,7 @@
 var lib = require('../');
 var DevtoolsTelemetry = lib.DevtoolsTelemetry;
 var assert = require('assert');
-var _ = require('underscore');
+var _ = require('lodash');
 
 describe('Devtools telemetry basics', function() {
   var dd;
@@ -41,5 +41,20 @@ describe('Devtools telemetry basics', function() {
       assert.equal(keys[0], 'More than 5 minutes.');
       done();
     })
+  });
+
+  it('tests getWeeklyChannelUsage', function(done) {
+    var windows = dd.generateBuildWindows(40, 41);
+    dd.getWeeklyChannelUsage(windows, 'Toolbox', function(result) {
+      var keys = _.keys(result);
+      assert.equal(keys[0], 'nightly');
+      assert.equal(keys[1], 'aurora');
+
+      var _dataKeys = _.keys(result.nightly[0]);
+      assert.equal(_dataKeys[0], 'count');
+      assert.equal(_dataKeys[1], 'week');
+      assert.equal(_dataKeys[2], '_intWeek');
+      done();
+    });
   });
 });

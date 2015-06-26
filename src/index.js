@@ -401,10 +401,9 @@ class DevtoolsTelemetry {
     var functions = this._getFunctionsFromWindows(windows, toolName);
 
     async.parallel(functions, function(err, results) {
-      console.log("got here.");
       if (err) throw err;
 
-      var flat_results = _.flatten(results);
+      var flat_results = _.flattenDeep(results);
       var dateGroups = {};
       _.each(flat_results, function(result) {
         if (!dateGroups[result.strDate]) {
@@ -422,7 +421,7 @@ class DevtoolsTelemetry {
       // callback(dateGroups);
 
       _.each(dateGroups, function(counts, date) {
-        var _m = moment(date);
+        var _m = moment(counts[0].date);
         var _year = _m.year();
         var _weeks = _m.weeks();
         var strWeek = _m.clone().startOf('week').format('MM/DD/YYYY');
@@ -559,7 +558,7 @@ if (!module.parent) {
   var dd = new DevtoolsTelemetry();
   dd.init(function() {
     var windows = dd.generateBuildWindows(40, 41);
-    dd.getWeeklyToolUsage(windows, 'Toolbox', (result) => {
+    dd.getWeeklyChannelUsage(windows, 'Toolbox', (result) => {
       debugger;
       console.log("result>", result);
     });
