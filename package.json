@@ -4,7 +4,7 @@
   "description": "A module that provides devtools-specific telemtry data",
   "main": "index.js",
   "scripts": {
-    "test": "mocha -t 10000 -w"
+    "test": "mocha -t 10000"
   },
   "author": "Jeff Griffiths (@canuckistani)",
   "license": "MIT",
