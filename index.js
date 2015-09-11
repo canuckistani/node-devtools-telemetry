@@ -1,10 +1,12 @@
 'use strict';
 
+var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
+
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-var Telemetry = require('telemetry-js-node'),
+var Telemetry = require('telemetry-next-node'),
     _ = require('lodash'),
     async = require('async');
 
@@ -40,7 +42,7 @@ var DevtoolsTelemetry = (function () {
 
       var that = this;
       this.telemetryInstance.init(function () {
-        _this.versions = _this.telemetryInstance.versions();
+        _this.versions = _this.telemetryInstance.getVersions("aurora/40", "nightly/43");
         callback(true);
       });
     }
@@ -63,10 +65,10 @@ var DevtoolsTelemetry = (function () {
         callback(out);
       });
     }
-  }, {
-    key: 'generateModel',
 
     // generate a model of the tools measures
+  }, {
+    key: 'generateModel',
     value: function generateModel(version, callback) {
       var _this3 = this;
 
@@ -197,7 +199,7 @@ var DevtoolsTelemetry = (function () {
           var measures = this.Toolmap[toolName];
           var inner = _.map(measures, function (m) {
             return function (callback) {
-              this.telemetryInstance.loadEvolutionOverTime(version, m, function (evolution) {
+              this.telemetryInstance.getEvolution(version, m, function (evolution) {
                 var mapped = evolution.map(function (date, histogram, index) {
                   var _strDate = formatDate(date);
                   return histogram.map(function (count, start, end, index) {
@@ -258,8 +260,16 @@ var DevtoolsTelemetry = (function () {
           var measures = that.Toolmap[toolName];
           var inner = _.map(measures, function (m) {
             return function (callback) {
-              that.telemetryInstance.loadEvolutionOverTime(version, m, function (evolution) {
-                var mapped = evolution.map(function (date, histogram, index) {
+              var _version$split = version.split('/');
+
+              var _version$split2 = _slicedToArray(_version$split, 2);
+
+              var _chan = _version$split2[0];
+              var _ver = _version$split2[1];
+
+              console.log('>>>', _chan, _ver, m);
+              that.telemetryInstance.getEvolution(_chan, _ver, m, {}, true, function (evolution) {
+                var mapped = evolution[""].map(function (histogram, index, date) {
                   var _strDate = formatDate(date);
                   return histogram.map(function (count, start, end, index) {
                     return {
@@ -443,7 +453,7 @@ var DevtoolsTelemetry = (function () {
           };
           totals.push(_r);
           if (_i === limit) {
-            finish(_.sortBy(totals, 'yes').reverse());
+            finish(_.sortBy(totals, "yes").reverse());
           }
         });
       });
@@ -553,10 +563,10 @@ function getCurrentVersions(callback) {
   // console.log($.getJSON);
 
   var data = {
-    'firefox': '38.0.5',
-    'beta': '39.0b6',
-    'aurora': '40.0a2',
-    'nightly': '41.0a1'
+    "firefox": "38.0.5",
+    "beta": "39.0b6",
+    "aurora": "40.0a2",
+    "nightly": "41.0a1"
   };
 
   callback(null, data);
@@ -576,15 +586,15 @@ function isInRange(range, start, end) {
 var ranges = [{
   start: 300,
   end: Infinity,
-  desc: 'More than 5 minutes.'
+  desc: "More than 5 minutes."
 }, {
   start: 1800,
   end: Infinity,
-  desc: 'More than 30 minutes'
+  desc: "More than 30 minutes"
 }, {
   start: 30,
   end: Infinity,
-  desc: 'More than 30 seconds.'
+  desc: "More than 30 seconds."
 }];
 
 exports.DevtoolsTelemetry = DevtoolsTelemetry;
@@ -596,7 +606,7 @@ if (!module.parent) {
     var windows = dd.generateBuildWindows(40, 41);
     dd.getWeeklyChannelUsage(windows, 'Toolbox', function (result) {
       debugger;
-      console.log('result>', result);
+      console.log("result>", result);
     });
   });
 }

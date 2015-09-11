@@ -1,4 +1,4 @@
-var Telemetry = require('telemetry-js-node'),
+const Telemetry = require('telemetry-next-node'),
   _ = require('lodash'),
   async = require('async');
 
@@ -28,7 +28,7 @@ class DevtoolsTelemetry {
   init(callback) {
     let that = this;
     this.telemetryInstance.init(() => {
-      this.versions = this.telemetryInstance.versions();
+      this.versions = this.telemetryInstance.getVersions("aurora/40", "nightly/43");
       callback(true);
     });
   }
@@ -240,7 +240,7 @@ class DevtoolsTelemetry {
         var measures = this.Toolmap[toolName];
         var inner = _.map(measures, function(m) {
           return function(callback) {
-            this.telemetryInstance.loadEvolutionOverTime(version, m, function(evolution) {
+            this.telemetryInstance.getEvolution(version, m, function(evolution) {
               var mapped = evolution.map(function (date, histogram, index) {
                 var _strDate = formatDate(date);
                 return histogram.map(function(count, start, end, index) {
@@ -300,8 +300,10 @@ class DevtoolsTelemetry {
         var measures = that.Toolmap[toolName];
         var inner = _.map(measures, function(m) {
           return function(callback) {
-            that.telemetryInstance.loadEvolutionOverTime(version, m, function(evolution) {
-              var mapped = evolution.map(function (date, histogram, index) {
+            let  [ _chan, _ver ] = version.split('/');
+            console.log('>>>', _chan, _ver, m);
+            that.telemetryInstance.getEvolution(_chan, _ver, m, {}, true, function(evolution) {
+              var mapped = evolution[""].map(function (histogram, index, date) {
                 var _strDate = formatDate(date);
                 return histogram.map(function(count, start, end, index) {
                   return {
@@ -468,7 +470,7 @@ class DevtoolsTelemetry {
   fetchChannel(targetVersion, channel, finish) {
     var totals = [];
     var _i = 0, limit = (_.size(tools));
-    _.each(tools, function(tool, label) {      
+    _.each(tools, function(tool, label) {
       var _version = channel+'/'+targetVersion;
       this.getUsageGraph(_version, tool, function(err, result) {
         if (err) throw err;

@@ -22,6 +22,6 @@
     "lodash": "^3.9.3",
     "moment": "^2.10.3",
     "moment-range": "^2.0.2",
-    "telemetry-js-node": "^1.0.0"
+    "telemetry-next-node": "^1.2.0"
   }
 }
