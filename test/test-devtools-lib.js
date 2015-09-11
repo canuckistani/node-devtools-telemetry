@@ -1,5 +1,4 @@
-var lib = require('../');
-var DevtoolsTelemetry = lib.DevtoolsTelemetry;
+var DevtoolsTelemetry = require('../').DevtoolsTelemetry;
 var assert = require('assert');
 var _ = require('lodash');
 
