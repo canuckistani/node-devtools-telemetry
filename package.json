@@ -1,6 +1,6 @@
 {
   "name": "devtools-telemetry",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A module that provides devtools-specific telemtry data",
   "main": "index.js",
   "scripts": {
